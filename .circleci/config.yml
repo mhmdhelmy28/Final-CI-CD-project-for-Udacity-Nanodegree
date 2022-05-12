@@ -1,6 +1,103 @@
 version: 2.1
 
+commands: 
+  destroy-environment:
+    parameters:
+      workflow-id:
+        type: string
+    steps:
+    - run:
+       when: on_fail 
+       name: destroy stack
+       command: |
+          aws cloudformation delete-stack --stack-name udapeople-backend-<<parameters.workflow-id>> 
+          aws cloudformation delete-stack --stack-name udapeople-frontend-<<parameters.workflow-id>> 
 jobs:
+  build-frontend:
+    docker: 
+      - image: circleci/node:13.8.0
+    steps:
+    - checkout
+    - run: 
+        name: "build frontend"
+        command: |
+          cd frontend
+          npm install
+          npm run build
+    - save_cache:
+        paths: frontend/node_modules
+        key: frontend-cache
+
+
+  build-backend:
+    docker:
+      - image: circleci/node:13.8.0
+    steps:
+    - checkout
+    - run:
+        name: "build backend"
+        command: |
+          cd backend
+          npm install
+          npm run build
+    - save_cache:
+        paths: backend/node_modules
+        key: backend-cache
+  test-frontend:
+    docker:
+      - image: circleci/node:13.8.0
+    steps:
+    - checkout
+    - restore_cache:
+        keys: frontend-cache
+    - run:
+        name: test frontend
+        command: |
+          cd frontend
+          npm install
+          npm run test
+  test-backend:
+    docker:
+      - image: circleci/node:13.8.0
+    steps:
+    - checkout
+    - restore_cache:
+        keys: backend-cache
+    - run:
+        name: test-frontend
+        command: |
+          cd backend
+          npm install
+          npm run test
+  scan-frontend:
+    docker:
+      - image: circleci/node:13.8.0
+    steps:
+    - checkout
+    - restore_cache:
+        keys: frontend-cache
+    - run:
+        name: scan frontend for possible vulnerabilities
+        command: |
+          cd frontend
+          npm install
+          npm audit fix --audit-level=critical --force
+          npm audit --audit-level=critical
+  scan-backend:
+    docker:
+      - image: circleci/node:13.8.0
+    steps:
+    - checkout
+    - restore_cache:
+        keys: backend-cache
+    - run:
+        name: scan backend for possible vulnerabilities
+        command: |
+          cd backend
+          npm install
+          npm audit fix --audit-level=critical --force
+          npm audit fix --audit-level=critical --force
+          npm audit --audit-level=critical
   deploy-infrastructure: 
     docker:
       - image: amazon/aws-cli
@@ -12,12 +109,48 @@ jobs:
       - run: 
           name: build backend infrastructure
           command: |
+            aws cloudformation deploy \
+            --template-file .circleci/files/backend.yml \
+            --stack-name "udapeople-backend-${CIRCLE_WORKFLOW_ID:0:7}" \
+            --parameter-overrides ID="${CIRCLE_WORKFLOW_ID:0:7}"  \
+            --tags project=udapeople
+     - run:
+         name: build frontend infrastructure
+         command: |
            aws cloudformation deploy \
-           --template-file .circleci/files/backend.yml \
-           --stack-name "udapeople-backend-${CIRCLE_WORKFLOW_ID:0:7}" \
+           --template-file .circleci/files/frontend.yml \
+           --stack-name "udapeople-frontend-${CIRCLE_WORKFLOW_ID:0:7}" \
            --parameter-overrides ID="${CIRCLE_WORKFLOW_ID:0:7}"  \
            --tags project=udapeople
+     - run:
+         name: add ec2 ip to ansible inventory
+         command: |
+           aws ec2 describe-instances \
+           --query "Reservations[*].Instances[*].PublicIpAddress" \
+           --filters Name=tag:Name,Value="backend-${CIRCLE_WORKFLOW_ID:0:7}" \
+           --output text >> .circleci/ansible/inventory.txt
+     - persist_to_workspace:
+         root: ~/project
+         paths:
+           - .circleci/ansible/inventory.txt
 workflows:
   default:
     jobs:
-      - deploy-infrastructure
+      - build-frontend
+      - build-backend
+      - test-frontend:
+          requires:
+            - build-frontend
+      - test-backend:
+          requires:
+            - build-backend
+      - scan-frontend:
+          requires:
+            - build-frontend
+      - scan-backend:
+          requires:
+            - build-backend
+      - deploy-infrastructure:
+          requires:
+            - build-backend
+            - build-frontend
