@@ -133,8 +133,30 @@ jobs:
       - persist_to_workspace:
          root: ~/project
          paths:
-           - .circleci/ansible/inventory.txt
+           - .circleci/ansible/
       - destroy-environment
+  configure-infrastructure:
+    docker:
+      - image: cimg/python:3.10.4
+    steps:
+    - checkout
+    - add_ssh_keys:
+        fingerprints:
+          - "5c:81:b9:e8:60:b2:22:32:12:69:7c:fe:05:b3:da:9e"
+    - run:
+        name: Setup dependencies
+        command: apk add --upgrade bash ansible openssh-client
+    - run:
+        name: Install AWS-CLI
+        command: pip3 install awscli
+    - attach_workspace:
+         at: ~/project
+    - run:
+        name: run ansible playbook
+        command: |
+          cd .circleci/ansible
+          ansible-playbook -i inventory.txt configure-server.yml
+
 workflows:
   default:
     jobs:
