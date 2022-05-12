@@ -146,9 +146,9 @@ jobs:
     - run:
         name: Setup dependencies
         command: |
-           apt -y update
-           apt -y install tar gzip openssh-client
-           pip install ansible awscli 
+           sudo apt -y update
+           sudo apt -y install tar gzip openssh-client
+           sudo pip install ansible awscli 
     - attach_workspace:
          at: ~/project
     - run:
