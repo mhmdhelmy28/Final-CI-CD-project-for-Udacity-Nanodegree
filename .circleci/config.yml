@@ -7,9 +7,9 @@ commands:
         type: string
     steps:
     - run:
-      when: on_fail 
-        name: destroy stack
-        command: |
+       when: on_fail 
+       name: destroy stack
+       command: |
           aws cloudformation delete-stack --stack-name udapeople-backend-<<parameters.workflow-id> \
           aws cloudformation delete-stack --stack-name udapeople-frontend-<<parameters.workflow-id>> \
           aws s3api delete-bucket --bucket udapeoplelastproject --region us-east-1
