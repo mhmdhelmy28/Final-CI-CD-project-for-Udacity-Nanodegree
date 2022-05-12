@@ -12,9 +12,9 @@
     update_cache: yes
 
 - name: Install Nodejs and NPM
-   apt: 
-     name: ["nodejs", "npm"]
-     state: latest
+  apt: 
+    name: ["nodejs", "npm"]
+    state: latest
 
 - name: donwload PM2 
-   shell: npm install pm2 -g && pm2 update
+  shell: npm install pm2 -g && pm2 update
