@@ -99,46 +99,44 @@ jobs:
           npm audit fix --audit-level=critical --force
           npm audit fix --audit-level=critical --force
           npm audit --audit-level=critical
-  deploy-infrastructure:
+  deploy-infrastructure: 
     docker:
       - image: amazon/aws-cli
     steps:
       - checkout
-      - run:
-          name: Ensure back-end infrastructure exists
+      - run: 
+          name: install tar and gzip
+          command: yum install -y tar gzip
+      - run: 
+          name: build backend infrastructure
           command: |
             aws cloudformation deploy \
-            --template-file ~/project/.circleci/files/backend.yml \
+            --template-file .circleci/files/backend.yml \
             --stack-name "udapeople-backend-${CIRCLE_WORKFLOW_ID:0:7}" \
             --parameter-overrides ID="${CIRCLE_WORKFLOW_ID:0:7}"  \
             --tags project=udapeople
-      - run: yum -y install tar gzip
       - run:
-          name: Ensure front-end infrastructure exist
+          name: build frontend infrastructure
           command: |
             aws cloudformation deploy \
-            --template-file ~/project/.circleci/files/frontend.yml \
+            --template-file .circleci/files/frontend.yml \
             --stack-name "udapeople-frontend-${CIRCLE_WORKFLOW_ID:0:7}" \
             --parameter-overrides ID="${CIRCLE_WORKFLOW_ID:0:7}"  \
             --tags project=udapeople
+      
       - run:
-          name: Add back-end ip to ansible inventory
+          name: Add the EC2 instance IP to the Ansible inventory
           command: |
             aws ec2 describe-instances \
             --query 'Reservations[*].Instances[*].PublicIpAddress' \
-            --output text \
-            --filter Name=tag:Name,Values="backend-${CIRCLE_WORKFLOW_ID:0:7}" >> ~/project/.circleci/ansible/inventory.txt
-      - run:
-          name: ensuring ip is written to anisble's inventory
-          command: |
-            cat ~/project/.circleci/ansible/inventory.txt
+            --filters "Name=tag:Name,Values=backend-${CIRCLE_WORKFLOW_ID:0:7}" \
+            --output text >> .circleci/ansible/inventory.txt
       - persist_to_workspace:
-          root: ~/project/.circleci/ansible/
+          root: ~/
           paths:
-            - inventory.txt
-      - destroy-environment:
-          workflow-id: "${CIRCLE_WORKFLOW_ID:0:7}"
-
+            - project/.circleci/ansible/inventory.txt
+      - destroy-environment
+   
 workflows:
   default:
     jobs:
