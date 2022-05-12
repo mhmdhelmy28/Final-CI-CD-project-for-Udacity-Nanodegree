@@ -1,8 +1,10 @@
-- name: "update apt packages."
-   become: true
-   apt:
-     update_cache: yes
+- name: "Updating Packages."
+  apt:
+    update_cache: yes
 
+- name: "Upgrading Packages."
+  apt:
+    upgrade: yes
 - name: "Installing some utilities"
   apt:
     name: [ "zip", "unzip", "tar" ]
