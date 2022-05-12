@@ -145,10 +145,10 @@ jobs:
           - "5c:81:b9:e8:60:b2:22:32:12:69:7c:fe:05:b3:da:9e"
     - run:
         name: Setup dependencies
-        command: apk add --upgrade bash ansible openssh-client
-    - run:
-        name: Install AWS-CLI
-        command: pip3 install awscli
+        command: |
+           apt -y update
+           apt -y install tar gzip openssh-client
+           pip install ansible awscli 
     - attach_workspace:
          at: ~/project
     - run:
