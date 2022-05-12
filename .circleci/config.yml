@@ -103,38 +103,42 @@ jobs:
     docker:
       - image: amazon/aws-cli
     steps:
-    - checkout
-    - run:
-       name: deploy backend infrastructure
-       command: |
-         aws cloudformation deploy \
-         --template-file .circleci/files/backend.yml \
-         --stack-name "udapeople-backend-${CIRCLE_WORKFLOW_ID:0:7}" \
-         --parameter-overrides ID="${CIRCLE_WORKFLOW_ID:0:7}"  \
-         --tags project=udapeople
-    - run:
-       name: deploy frontend infrastructure
-       command: |
-         aws cloudformation deploy \
-         --template-file .circleci/files/frontend.yml \
-         --stack-name "udapeople-frontend-${CIRCLE_WORKFLOW_ID:0:7}" \
-         --parameter-overrides ID="${CIRCLE_WORKFLOW_ID:0:7}"  \
-         --tags project=udapeople
-   
-    - run:
-       name: add ec2 ip to ansible inventory file
-       command: |
-         aws ec2 describe-instances \
-         --query 'Reservations[*].Instances[*].PublicIpAddress' \
-         --output text \
-         -- filter Name=tag:Name,Values=backend-${CIRCLE_WORKFLOW_ID:0:7} \
-         >> ~/project/.circleci/ansible/inventory.txt
-    - persist_to_workspace:
-        root: ~/project/.circleci/ansible
-        paths: 
-          - inventory.txt
-    - destroy-environment:
-         workflow-id: "${CIRCLE_WORKFLOW_ID:0:7}"
+      - checkout
+      - run:
+          name: Ensure back-end infrastructure exists
+          command: |
+            aws cloudformation deploy \
+            --template-file .circleci/files/backend.yml \
+            --stack-name "udapeople-backend-${CIRCLE_WORKFLOW_ID:0:7}" \
+            --parameter-overrides ID="${CIRCLE_WORKFLOW_ID:0:7}"  \
+            --tags project=udapeople
+      - run: yum -y install tar gzip
+      - run:
+          name: Ensure front-end infrastructure exist
+          command: |
+            aws cloudformation deploy \
+            --template-file .circleci/files/frontend.yml \
+            --stack-name "udapeople-frontend-${CIRCLE_WORKFLOW_ID:0:7}" \
+            --parameter-overrides ID="${CIRCLE_WORKFLOW_ID:0:7}"  \
+            --tags project=udapeople
+      - run:
+          name: Add back-end ip to ansible inventory
+          command: |
+            aws ec2 describe-instances \
+            --query 'Reservations[*].Instances[*].PublicIpAddress' \
+            --output text \
+            --filter Name=tag:Name,Values="backend-${CIRCLE_WORKFLOW_ID:0:7}" >> ~/project/.circleci/ansible/inventory.txt
+      - run:
+          name: ensuring ip is written to anisble's inventory
+          command: |
+            cat ~/project/.circleci/ansible/inventory.txt
+      - persist_to_workspace:
+          root: ~/project/.circleci/ansible/
+          paths:
+            - inventory.txt
+      - destroy-environment:
+          workflow-id: "${CIRCLE_WORKFLOW_ID:0:7}"
+
 workflows:
   default:
     jobs:
