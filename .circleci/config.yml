@@ -114,7 +114,7 @@ jobs:
             --stack-name "udapeople-backend-${CIRCLE_WORKFLOW_ID:0:7}" \
             --parameter-overrides ID="${CIRCLE_WORKFLOW_ID:0:7}"  \
             --tags project=udapeople
-     - run:
+      - run:
          name: build frontend infrastructure
          command: |
            aws cloudformation deploy \
@@ -122,14 +122,14 @@ jobs:
            --stack-name "udapeople-frontend-${CIRCLE_WORKFLOW_ID:0:7}" \
            --parameter-overrides ID="${CIRCLE_WORKFLOW_ID:0:7}"  \
            --tags project=udapeople
-     - run:
+      - run:
          name: add ec2 ip to ansible inventory
          command: |
            aws ec2 describe-instances \
            --query "Reservations[*].Instances[*].PublicIpAddress" \
            --filters Name=tag:Name,Value="backend-${CIRCLE_WORKFLOW_ID:0:7}" \
            --output text >> .circleci/ansible/inventory.txt
-     - persist_to_workspace:
+      - persist_to_workspace:
          root: ~/project
          paths:
            - .circleci/ansible/inventory.txt
