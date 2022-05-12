@@ -3,10 +3,11 @@
    apt:
      update_cache: yes
 
-- name: download build essentials
-   apt:
-     name: build-essential
-     state: latest    
+- name: "Installing some utilities"
+  apt:
+    name: [ "zip", "unzip", "tar" ]
+    state: latest
+    update_cache: yes
 
 - name: Install Nodejs and NPM
    apt: 
