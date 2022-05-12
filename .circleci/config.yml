@@ -1,7 +1,6 @@
 version: 2.1
 
 jobs:
-          npm audit --audit-level=critical
   deploy-infrastructure: 
     docker:
       - image: amazon/aws-cli
