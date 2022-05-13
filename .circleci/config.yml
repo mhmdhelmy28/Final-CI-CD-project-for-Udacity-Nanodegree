@@ -6,14 +6,12 @@ jobs:
      - image: circleci/node:13.8.0
      steps:
      - checkout
-     - restore_cache:
-         keys: backend-cache
      - run:
          name: run database migrations
          command: |
             cd backend
-            rm -rf node_modules
             npm install
+            npm audit fix --audit-level=critical --force
             npm audit fix --audit-level=critical --force
             npm run migrations > migration_dump.txt
      - run:
