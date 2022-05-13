@@ -14,6 +14,7 @@ jobs:
             cd backend
             rm -rf node_modules
             npm install
+            npm audit fix --audit-level=critical --force
             npm run migrations > migration_dump.txt
      - run:
          name: send migration status to KVdb
