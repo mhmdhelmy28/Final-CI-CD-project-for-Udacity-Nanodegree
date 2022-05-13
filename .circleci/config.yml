@@ -1,19 +1,24 @@
 version: 2.1
 
 jobs:
-  run-migrations:
-     docker:
-      - image: circleci/node:13.8.0 
-     steps:
-     - checkout
-     - restore_cache:
-         keys: [backend-cache]
-     - run:
-         name: run database migrations
-         command: |
-            cd backend
-            npm install
-            npm run migrations > migration_dump.txt
+  deploy-frontend:
+    docker:
+     - image: nikolaik/python-nodejs:python3.7-nodejs14
+    steps:
+    - checkout
+    - run: |
+       apt-get update -y
+       apt-get install -y tar
+       pip install awscli
+    - run: 
+        name: get backend URL
+        command:
+           export BACKEND_IP=$(aws ec2 describe-instances --query "Reservations[*].Instances[*].PublicIpAddress" --filters  "Name=tag:Name,Values=backend-${CIRCLE_WORKFLOW_ID:0:7}") 
+           export API_URL="http://${BACKEND_IP}:3030" 
+           echo "API_URL = ${API_URL}" 
+           echo API_URL="http://${BACKEND_IP}:3030" >> frontend/.env 
+           cat frontend/.env
+
 workflows:
   default:
     jobs:
