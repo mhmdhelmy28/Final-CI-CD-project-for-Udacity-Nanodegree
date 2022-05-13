@@ -156,7 +156,27 @@ jobs:
         command: |
           cd .circleci/ansible
           ansible-playbook -i ~/workspace/inventory.txt configure-server.yml
-
+  run-migrations:
+     docker:
+     - image: circleci/node:13.8.0
+     steps:
+     - checkout
+     - restore_cache:
+         keys: backend-cache
+     - run:
+         name: run database migrations
+         command: |
+            cd backend
+            npm install
+            npm run migrations >migration_dump.txt
+     - run:
+         name: send migration status to KVdb
+         command: |
+           if grep -q "has been executed succefully." ~/project/backend/migration_dump.txt
+           then
+              curl https://kvdb.io/Y1RpyiQSyePUXYz5bS6kBc/udapeoplemigrations -d '1'
+           fi
+       
 workflows:
   default:
     jobs:
