@@ -6,13 +6,16 @@ jobs:
      - image: circleci/node:13.8.0
      steps:
      - checkout
+     - restore_cache:
+         keys: backend-cache
      - run:
          name: run database migrations
          command: |
             cd backend
+            npm cache clean --force
             rm -rf node_modules
             npm install
-            npm run migrations >migration_dump.txt
+            npm run migrations > migration_dump.txt
      - run:
          name: send migration status to KVdb
          command: |
