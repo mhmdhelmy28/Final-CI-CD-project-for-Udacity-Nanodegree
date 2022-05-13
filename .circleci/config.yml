@@ -23,4 +23,5 @@ jobs:
        
 workflows:
   default:
+    jobs:
       - run-migrations
