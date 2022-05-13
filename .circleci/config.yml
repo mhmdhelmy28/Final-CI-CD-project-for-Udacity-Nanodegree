@@ -158,16 +158,13 @@ jobs:
           ansible-playbook -i ~/workspace/inventory.txt configure-server.yml
   run-migrations:
      docker:
-     - image: circleci/node:13.8.0
+             - image: cimg/node:18.1.0 
      steps:
      - checkout
-     - restore_cache:
-         keys: backend-cache
      - run:
          name: run database migrations
          command: |
             cd backend
-            npm cache clean --force
             npm rm -rf node_modules
             npm install
             npm run migrations > migration_dump.txt
