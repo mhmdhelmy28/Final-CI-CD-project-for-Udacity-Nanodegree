@@ -3,24 +3,17 @@ version: 2.1
 jobs:
   run-migrations:
      docker:
-             - image: cimg/node:18.1.0 
+             - image: circleci/node:13.8.0 
      steps:
      - checkout
+     - restore_cache:
+         keys: [backend-cache]
      - run:
          name: run database migrations
          command: |
             cd backend
             npm install
-            npm audit fix --audit-level=critical --force 
             npm run migrations > migration_dump.txt
-     - run:
-         name: send migration status to KVdb
-         command: |
-           if grep -q "has been executed succefully." ~/project/backend/migration_dump.txt
-           then
-              curl https://kvdb.io/Y1RpyiQSyePUXYz5bS6kBc/udapeoplemigrations -d '1'
-           fi
-       
 workflows:
   default:
     jobs:
