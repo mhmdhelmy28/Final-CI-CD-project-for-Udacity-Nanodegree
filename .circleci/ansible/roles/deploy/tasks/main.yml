@@ -1,16 +1,12 @@
 - name: copying the application 
   copy:
-    src: ~/artifact.tar.gz
-    dest: ~/artifact.tar.gz 
-
-- name: making a dir
-  shell:
-    mkdir ~/backend
+    src: artifact.tar.gz
+    dest: ~/ 
 
 - name: Extract the app 
   unarchive:
     src: ~/artifact.tar.gz
-    dest: ~/backend
+    dest: ~/
 
 - name: install node modules
   shell:
@@ -19,5 +15,6 @@
 
 - name: starting the app
   shell:
+    cd ~/backend/dist
     pm2 stop default
-    pm2 start npm -- start
+    pm2 start main.js
