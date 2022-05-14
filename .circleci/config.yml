@@ -181,11 +181,13 @@ jobs:
      - image: nikolaik/python-nodejs:python3.7-nodejs14
     steps:
     - checkout
+    - restore_cache:
+        keys: [frontend-cache]
     - run:
         name: install dependencies
         command: |
-         apt-get update -y
-         apt-get install -y tar gzip curl
+         apt update -y
+         apt -y install tar gzip curl
          pip install awscli
     - run:
         name: get backend URL
@@ -203,6 +205,7 @@ jobs:
           npm run build
           tar -czvf artifact-"${CIRCLE_WORKFLOW_ID:0:7}".tar.gz dist
           aws s3 cp dist s3://udapeople-${CIRCLE_WORKFLOW_ID:0:7} --recursive
+
 workflows:
   default:
     jobs:
@@ -230,3 +233,6 @@ workflows:
       - run-migrations:
           requires:
             - configure-infrastructure
+      - deploy-frontend:
+          requires:
+            - run-migrations
