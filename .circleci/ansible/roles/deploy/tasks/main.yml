@@ -4,7 +4,7 @@
     state: directory
 
 - name: get extracted artifact into backend
-   unarchive:
+  unarchive:
      src: ~/project/artifact.tar.gz
      dest: ~/backend
 
