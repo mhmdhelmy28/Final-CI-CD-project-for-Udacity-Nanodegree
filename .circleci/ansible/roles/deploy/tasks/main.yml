@@ -18,4 +18,9 @@
   args:
     chdir: ~/backend
 
+- name: pm2 server start
+  become: true
+  shell: |
+    env PATH=$PATH:usr/local/bin pm2 startup systemd -u ubuntu --hp /home/ubuntu
+
 
