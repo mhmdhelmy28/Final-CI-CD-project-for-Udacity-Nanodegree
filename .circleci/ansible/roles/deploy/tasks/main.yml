@@ -3,10 +3,10 @@
     path: ~/backend
     state: directory
 
-- name: ectracting backend code
-  unarchive:
-    src: artifact.tar.gz
-    dest: ~/backend
+- name: get extracted artifact into backend
+   unarchive:
+     src: ~/project/artifact.tar.gz
+     dest: ~/backend
 
 - name: Installing  node modules
   command: npm install
