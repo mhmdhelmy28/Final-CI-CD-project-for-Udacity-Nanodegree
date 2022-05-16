@@ -5,16 +5,20 @@
 - name: "Upgrading Packages."
   apt:
     upgrade: yes
-- name: "Installing some utilities"
+
+- name: "Installing Utilities."
   apt:
     name: [ "zip", "unzip", "tar" ]
     state: latest
     update_cache: yes
 
-- name: Install Nodejs and NPM
-  apt: 
-    name: ["nodejs", "npm"]
-    state: latest
-
-- name: donwload PM2 
-  shell: npm install pm2 -g && pm2 update
+- name: install node
+  shell: |
+    curl -sL https://deb.nodesource.com/setup_13.x | sudo -E bash - && sudo apt-get install -y nodejs
+    
+- name: "Installing pm2"
+  npm:
+    name: pm2
+    global: yes
+    production: yes
+    state: present
