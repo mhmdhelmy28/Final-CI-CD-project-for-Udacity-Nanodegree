@@ -233,7 +233,7 @@ jobs:
          npm i
          npm run build
          cd ..
-         # Zip the directory
+         # Zip the directory 
          tar -C backend -czvf ~/artifact.tar.gz .
          cd .circleci/ansible
          ansible-playbook -i ~/workspace/inventory.txt deploy-backend.yml
