@@ -3,15 +3,15 @@ version: 2.1
 jobs:
   smoke-test:
     docker:
-      - image: amazon/aws-cli
+      - image: python:3.8-slim
     steps:
     - checkout
     - run:
         name: install some dependencies
         command: |
-           yum -y update
-           yum -y upgrade
-           yum -y install curl
+           apt -y update
+           apt -y upgrade
+           apt -y install curl
     - run: 
         name: Backend smoke test
         command: |
