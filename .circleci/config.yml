@@ -237,7 +237,7 @@ jobs:
          tar -C backend -czvf ~/artifact.tar.gz .
          cd .circleci/ansible
          ansible-playbook -i ~/workspace/inventory.txt deploy-backend.yml
-  smoke-tests:
+  smoke-test:
     docker:
       - image: python:3.8-slim
     steps:
