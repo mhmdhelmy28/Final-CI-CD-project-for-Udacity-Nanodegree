@@ -206,38 +206,6 @@ jobs:
           tar -czvf artifact-"${CIRCLE_WORKFLOW_ID:0:7}".tar.gz dist
           aws s3 cp dist s3://udapeople-${CIRCLE_WORKFLOW_ID:0:7} --recursive
 
-  deploy-backend:
-    docker:
-     - image: python:3.8-slim
-    steps:
-    - checkout
-    - restore_cache:
-        keys: [backend-cache]
-    - add_ssh_keys:
-        fingerprints: [ "5c:81:b9:e8:60:b2:22:32:12:69:7c:fe:05:b3:da:9e" ]
-    - run: 
-       name: installing depndencies
-       command: |
-         apt -y update
-         apt -y install tar gzip nodejs npm curl
-    - run:
-       name: install ansible and awscli
-       command: |
-         pip install ansible awscli
-    - attach_workspace:
-         at: ~/workspace
-    - run:
-       name: deploying backend
-       command: |
-         cd backend
-         npm i
-         npm run build
-         cd ..
-         # Zip the directory
-         tar -C backend -czvf artifact.tar.gz .
-         cd .circleci/ansible
-         ansible-playbook -i ~/workspace/inventory.txt deploy-backend.yml
-
 workflows:
   default:
     jobs:
@@ -266,8 +234,5 @@ workflows:
           requires:
             - configure-infrastructure
       - deploy-frontend:
-          requires:
-            - run-migrations
-      - deploy-backend:
           requires:
             - run-migrations
