@@ -1,5 +1,23 @@
----
-- name: "Copying compiled app"
+- name: Copying compressed app
   copy:
     src: "~/artifact.tar.gz"
     dest: "~/artifact.tar.gz"
+
+- name: Making a directory for backend
+  shell: mkdir ~/backend
+
+- name: Unzipping backend files
+  ansible.builtin.unarchive:
+    src: ~/artifact.tar.gz
+    dest: ~/backend
+    
+- name: Install some dependencies
+  shell: |
+    cd ~/backend
+    npm install
+
+- name: Starting the server
+  shell: |
+    cd ~/backend
+    pm2 stop default
+    pm2 start npm -- start
