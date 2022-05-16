@@ -239,7 +239,7 @@ jobs:
          ansible-playbook -i ~/workspace/inventory.txt deploy-backend.yml
   smoke-test:
     docker:
-      - image: python:3.8-slim
+      - image: amazon/aws-cli
     steps:
     - checkout
     - run:
@@ -247,7 +247,7 @@ jobs:
         command: |
            apt -y update
            apt -y upgrade
-           apt -y install curl nodejs npm
+           apt -y install curl
     - run: 
         name: Backend smoke test
         command: |
