@@ -3,7 +3,7 @@ version: 2.1
 jobs:
   smoke-test:
     docker:
-      - image: python:3.8-slim
+      - image: ubuntu:latest 
     steps:
     - checkout
     - run:
