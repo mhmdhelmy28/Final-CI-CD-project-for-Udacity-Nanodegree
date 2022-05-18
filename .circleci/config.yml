@@ -303,7 +303,7 @@ jobs:
       - image: amazon/aws-cli
     steps:
       - checkout
-       run:
+      - run:
           name: Installing some dependencies
           command: |
             yum update -y
@@ -358,3 +358,6 @@ workflows:
             - run-migrations
       - smoke-test:
           requires: [deploy-backend, deploy-frontend]
+      - cloudfront-update:
+          requires:
+            - smoke-test
