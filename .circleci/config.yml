@@ -350,7 +350,6 @@ jobs:
            else
              echo "No stacks found"
            fi
-
 workflows:
   default:
     jobs:
