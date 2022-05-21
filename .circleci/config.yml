@@ -298,8 +298,6 @@ jobs:
              fi
     - destroy-environment
     - revert-migrations
-
-
   cloudfront-update:
     docker:
       - image: amazon/aws-cli
@@ -353,7 +351,8 @@ jobs:
              echo "No stacks found"
            fi
 workflows:
-  default:
+
+  Full_Pipeline:
     jobs:
       - build-frontend
       - build-backend
