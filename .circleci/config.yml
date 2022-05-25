@@ -351,8 +351,7 @@ jobs:
              echo "No stacks found"
            fi
 workflows:
-
-  Full_Pipeline:
+  default:
     jobs:
       - build-frontend
       - build-backend
