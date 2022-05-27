@@ -1,0 +1,8 @@
+URL1-GitHub-Repository: https://github.com/mhmdhelmy28/Final-CI-CD-project-for-Udacity-Nanodegree
+
+URL2-S3-Public: http://udapeople-be10141.s3.amazonaws.com/index.html
+
+URL3-CloudFront: http://ddbebtlcafyes.cloudfront.net
+
+URL4-Backend-Endpoint: http://3.91.154.22:3030/api/status
+URL5-Prometheus: http://ec2-107-20-90-193.compute-1.amazonaws.com:9090/targets
