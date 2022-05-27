@@ -349,7 +349,7 @@ jobs:
              echo "No stacks found"
            fi
 workflows:
-  main:
+  default:
     jobs:
       - build-frontend
       - build-backend
